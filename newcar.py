@@ -37,7 +37,8 @@ why it is necessary and where it is being used in the rest of the program.
 
 
 class Car:
-    """1. This Function:"""
+    """1. This Function:
+        This is the initialization function for the car class and gets called whenever a new car object is created. The first three lines initialise the sprite of the car from the file 'car.png'. This then gets converted to an object that can be displayed in pygame. The next three lines initialise the car position with the starting position, the angle of the car and the speed of the car. A variable is set to whether the car can set its speed. The centre of the car is calculated before initialising an empty array to hold the radars and the radar object that is drawn to the screen. The car is initialised as alive and then the distance driven and the time passed is initialised."""
 
     def __init__(self):
         # Load Car Sprite and Rotate
@@ -66,6 +67,7 @@ class Car:
         self.time = 0  # Time Passed
 
     """ 2. This Function:
+    This function takes in the self and the screen as an argument and draws the sprite and the radars to the screen.
     
     """
 
@@ -74,6 +76,7 @@ class Car:
         self.draw_radar(screen)  # OPTIONAL FOR SENSORS
 
     """ 3. This Function:
+    This function takes the self and the screen as arguments and loops through all the radars in the self.radars array and draws them to the screen.
     
     """
 
@@ -85,6 +88,7 @@ class Car:
             pygame.draw.circle(screen, (0, 255, 0), position, 5)
 
     """ 4. This Function:
+    This function takes in the self and the game_map as an argument. It starts by setting the self.alive to true and then loops through all corners of the object. It then checks if that corner is over the colour of the border and if it is, it set self.alive to false and breaks out of the loop.
     
     """
 
@@ -98,7 +102,7 @@ class Car:
                 break
 
     """ 5. This Function:
-    
+    This function takes in the self, a degree value, and a game_map value as arguments. It begins by initializing a length variable to zero. It then creates a vector with the magnitude of the length variable, and the degree of the degree variable. The final point is stored in an x variable and a y variable. A loop is then run, incrementing the length by 1 each time and checking if the vector intersects with the specified colour of the border. If this doesn't happen, the vector has a final length of 300. The distance to that point is then calculated using the pythagorean theorem and the radars, as well as the distance are appended to the self.radars attribute.
     """
 
     def check_radar(self, degree, game_map):
@@ -131,7 +135,7 @@ class Car:
         self.radars.append([(x, y), dist])
 
     """ 6. This Function:
-    
+    This function takes in the self and the game_map as an argument. It begins by checking if the speed of the self is set, and if it is not, it sets it to 20. This will only happen when the function is called for the first time. The sprite is then rotated to the self.angle value. The car is then moved by the speed value, but if it comes closer than 20px to the edge of the screen, it doesn't let the car. The self.distance value is updated, as well as the self.time. The centre of the car is then recalculated after the car has been moved. All four positions of the corners of the car are then calculated and then updated in the self. Finally, the collisions of the car are checked, the radars are cleared, and their values are recalculated, starting at -90, to 120, with a step size of 45.
     """
 
     def update(self, game_map):
@@ -189,11 +193,11 @@ class Car:
         self.radars.clear()
 
         # From -90 To 120 With Step-Size 45 Check Radar
-        for d in range(-90, 120, 45):
+        for d in range(-90, 120, 42):
             self.check_radar(d, game_map)
 
     """ 7. This Function:
-    
+    This function takes the self as an argument. It sets the radars variable to the radars of the self and then sets a return_values variable to an array of 5 zeros. It then iterates over each of the radars and sets the return_values element of that iteration to the radar length / 30 (which is the max length of the radar so it turns it to a value between zero and 1). the return_values array is then returned.
     """
 
     def get_data(self):
@@ -206,7 +210,7 @@ class Car:
         return return_values
 
     """ 8. This Function:
-    
+    This function returns whether the self is alive or not. (This is a sign of poorly written code)
     """
 
     def is_alive(self):
@@ -214,7 +218,7 @@ class Car:
         return self.alive
 
     """ 9. This Function:
-    
+    This function returns the reward of the car. It takes the self's total distance driven and divides it by half of the car length. This function will take longer to train than other reward functions, but it will produce a better model in the end. There is a slight issue with this code, which is that it is not calculating the distance around the track, it is calculating the distance driven. This might create a model that zig-zags down the track to maximise its distance rather than driving on the perfect racing line. To fix this issue, each map could include various points so that the distance can be properly calculated.
     """
 
     def get_reward(self):
@@ -223,7 +227,7 @@ class Car:
         return self.distance / (CAR_SIZE_X / 2)
 
     """ 10. This Function:
-    
+    This function takes in the self, an image and an angle value. It uses the pygame library to rotate the inputted image by the inputted angle, calculate the centre of that image, and then return it.
     """
 
     def rotate_center(self, image, angle):
@@ -237,7 +241,7 @@ class Car:
 
 
 """ This Function:
-
+This function starts by taking in a genomes parameter and a config parameter. The function initializes a nets array and cars array to empty arrays. It then initializes the pygame display to the width and height constants. The function then initializes all agents in the genomes array, and appends an empty car object to the cars array. The clock variable is initialized to the current pygame time and the fonts and maps are loaded. The current_generation variable is loaded as a global variable and is incremented by one. A counter variable is initialized to zero to serve as a primitive time limit variable. The code then begins to loop. The loop starts by checking if pygame has called a quit event, and if this has happend, the code exits with a 0 return code. The code then loops through all of the cars and runs their neurla network with their inputs. The highest value output neuron is then calculated and based on this, the car speeds up, slows down, turns left, or turns right. A still_alive variable is initialized with a value of 0. All of the cars are then looped over, and if they are alive, their total fitness gets updated and the still_alive variable is incremented by one. The code then checks if there are zero cars still alive or if the counter variable is greater than 30 * 40 (which will happen after about 20 seconds) and if they are true, the loop is broken. The info about the current generation and the number still alive is displayed on the screen, and clock is ticked at 60fps.
 """
 
 
@@ -263,7 +267,7 @@ def run_simulation(genomes, config):
     clock = pygame.time.Clock()
     generation_font = pygame.font.SysFont("Arial", 30)
     alive_font = pygame.font.SysFont("Arial", 20)
-    game_map = pygame.image.load("map.png").convert()  # Convert Speeds Up A Lot
+    game_map = pygame.image.load("map3.png").convert()  # Convert Speeds Up A Lot
 
     global current_generation
     current_generation += 1
@@ -331,7 +335,7 @@ def run_simulation(genomes, config):
 
 
 """ 1. This Section:
-    
+    This section starts by checking if the program is running directly from the kernels request. It then loads the config.txt and uses the neat library to load the hyperparametres of the model into a variable called config. It then creates a population variable that is a neat.Population object that takes in the hyperparameters from the config variable. A reporter is added to the variable which will print out to the standard output. A statistics reporter is also added to the population variable. The population variable is then for 1000 generations.
 """
 if __name__ == "__main__":
     # Load Config
